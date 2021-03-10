@@ -1,0 +1,65 @@
+version: "3.7"
+
+networks: 
+  internal: 
+    external: false
+
+services: 
+  #nginx
+  neurocome_view:
+    container_name: neurocome_view
+    build: 
+      context: ./images/nginx
+    restart: 'no'
+    volumes: 
+      - ../view:/var/www/view
+      - ./config/nginx/conf.d:/etc/nginx/conf.d
+      - ./logs/nginx:/var/log/nginx/
+    ports: 
+      - "127.0.0.1:2020:80"
+    networks:
+      - internal
+  # pgsql
+  neurocome_pgsql:
+    container_name: neurocome_pgsql
+    build: 
+      context: ./images/pgsql
+    restart: "no"
+    volumes: 
+      - ./config/pgsql:/etc/postgresql
+      - ./logs/pgsql:/var/log/postgresql
+      - ./data/pgsql:/var/lib/postgresql/data
+    environment: 
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: neurocome
+    ports:
+      - "127.0.0.1:5416:5432"
+    networks:
+      - internal
+  # pgadmin
+  neurocome_pgadmin:
+    container_name: neurocome_pgadmin
+    build: 
+      context: ./images/pgadmin
+    restart: 'no'
+    environment:
+      PGADMIN_DEFAULT_EMAIL: root@root.com
+      PGADMIN_DEFAULT_PASSWORD: root
+      PGADMIN_LISTEN_PORT: 5050
+    volumes:
+      - ./config/pgadmin/servers.json:/pgadmin4/servers.json
+    networks:
+      - internal
+  # golang
+  neurocome_rest:
+    container_name: neurocome_rest
+    build:
+      context: ./images/go/
+    restart: 'no'
+    volumes:
+      - ../rest:/app
+    ports:
+      - "127.0.0.1:3016:3000"
+    networks:
+      - internal

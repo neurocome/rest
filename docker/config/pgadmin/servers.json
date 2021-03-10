@@ -1,0 +1,13 @@
+{
+    "Servers": {
+        "1": {
+            "Name": "neurocome",
+            "Group": "Docker Server",
+            "Host": "neurocome_pgsql",
+            "Port": 5432,
+            "Username": "root",
+            "MaintenanceDB": "neurocome",
+            "SSLMode": "prefer"
+        }
+    }
+}
